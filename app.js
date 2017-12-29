@@ -93,7 +93,8 @@ var UIController = (function () {
     budgetLabel: '.budget__value',
     incomeLabel: '.budget__income--value',
     expensesLabel: '.budget__expenses--value',
-    percentageLabel: '.budget__expenses--percentage'
+    percentageLabel: '.budget__expenses--percentage',
+    container: '.container'
   }
 
   return {
@@ -156,14 +157,17 @@ var controller = (function (model, view) {
 
   var setupEventListeners = function() {
     var DOM = view.getDOMStrings();
-
+    // If add button is clicked, fire ctrlAddItem funciton
     document.querySelector(DOM.inputButton).addEventListener('click', ctrlAddItem);
-
+    // If enter/return key is pressed, fire ctrlAddItem funciton
     document.addEventListener('keypress', function (e) {
       if (e.keyCode === 13 || e.which === 13) {
         ctrlAddItem();
       }
     });
+
+    // Event delegator for delete buttons on income/expense items
+    document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
   };
 
   var updateBudget = function() {
@@ -174,7 +178,6 @@ var controller = (function (model, view) {
     budgetData = budgetController.getBudgetData();
     // Display the budget data in the UI
     UIController.updateBudget(budgetData);
-    budgetController.testing();
   };
 
   var ctrlAddItem = function() {
@@ -192,6 +195,25 @@ var controller = (function (model, view) {
     }  
 
     updateBudget();
+  };
+
+  var ctrlDeleteItem = function(e) {
+    var itemID, splitID, type, ID;
+    
+    itemID = e.parentNode.parentNode.parentNode.parentNode.id;
+
+    if (itemID) {
+      splitID = itemID.split('-');
+      type = splitID[0];
+      ID = splitID[1];
+    }
+
+    // Delete item from data
+
+    // Delete item form UI
+
+    // Update budget totals
+
   };
 
   return {

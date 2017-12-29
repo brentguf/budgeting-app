@@ -137,6 +137,13 @@ var UIController = (function () {
       target.insertAdjacentHTML("beforeend", newHtml);
 
     },
+    deleteListItem: function(itemID) {
+      var el;
+      // Lookup item in DOM
+      el = document.getElementById(itemID);
+      // Move one level up, so we can delete the element from the DOM
+      el.parentNode.removeChild(el);
+    },
     clearFields: function() {
       var fields, fieldsArr;
       // Get NodeList containing non-live input fields
@@ -194,6 +201,14 @@ var controller = (function (model, view) {
     UIController.updateBudget(budgetData);
   };
 
+  var updatePercentages = function() {
+    //
+
+    //
+
+    //
+  };
+
   var ctrlAddItem = function() {
     var input, item;
     // Get input fiels data
@@ -226,9 +241,9 @@ var controller = (function (model, view) {
     // Delete item from data
     budgetController.deleteItem(type, ID);
     // Delete item form UI
-
+    UIController.deleteListItem(itemID);
     // Update budget totals
-
+    updateBudget();
   };
 
   return {

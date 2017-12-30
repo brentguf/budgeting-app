@@ -79,7 +79,7 @@ var budgetController = (function() {
       
       // Represent the items in terms of their actual ids
       ids = data.allItems[type].map(function(item){
-        return item.id
+        return item.id;
       });
 
       // Grab index of item in array 
@@ -153,6 +153,38 @@ var UIController = (function () {
     expensePercentageLabel: '.item__percentage'
   }
 
+  var formatNumber = function(num, type) {
+    var numParts = [], splitNum, int, dec, formattedNum;
+    
+    // Remove sign of number (abs), round to 2 decimals and convert to string (toFixed) so we can use string methods on it
+    num = Math.abs(num);
+    num = num.toFixed(2);
+    
+    // Split the integer and decimal part
+    splitNum = num.split('.');
+    int = splitNum[0]
+    dec = splitNum[1];
+
+    while (int.length > 0) {
+      // If the number consists of 3 or more figures, add 3 last to numParts, followed by a comma
+      if (int.length > 3) {
+        numParts.unshift(int.substr(int.length - 3))
+        numParts.unshift(',');
+      } // Else, there are 3 figures left at most, so add them ass to numParts
+      else {
+        numParts.unshift(int.substr(0));
+      }
+      // Cut off the part we just added to numParts from num and continue this loop until we've gone over the entire num
+      int = int.substr(0, int.length - 3);
+    }
+
+    // Bring the different parts of our number back together 
+    formattedNum = numParts.join('') + '.' + dec;
+
+    // If it's an income, return a +, else add a -, followed by a space and the number
+    return (type === 'inc' ? '+' : '-') + ' ' + formattedNum;
+  }
+
   return {
     getInput: function() {
       return {
@@ -166,15 +198,15 @@ var UIController = (function () {
 
       if (type === "inc") {
         target = document.querySelector(DOMStrings.incomeContainer);
-        html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">+ %value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+        html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
       } else if (type === "exp") {
         target = document.querySelector(DOMStrings.expensesContainer);
-        html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">- %value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+        html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
       }
 
       newHtml = html.replace("%id%", item.id);
       newHtml = newHtml.replace("%description%", item.description);
-      newHtml = newHtml.replace("%value%", item.value);
+      newHtml = newHtml.replace("%value%", formatNumber(item.value, type));
 
       target.insertAdjacentHTML("beforeend", newHtml);
 
@@ -200,9 +232,14 @@ var UIController = (function () {
       fieldsArr[0].focus();
     },
     displayBudget: function(budgetData) {
-      document.querySelector(DOMStrings.budgetLabel).textContent = budgetData.total;
-      document.querySelector(DOMStrings.incomeLabel).textContent = budgetData.totalIncome;
-      document.querySelector(DOMStrings.expensesLabel).textContent = budgetData.totalExpenses;
+      var total;
+      
+      total = budgetData.total >= 0 ?
+         formatNumber(budgetData.total, 'inc') : formatNumber(budgetData.total, 'exp');
+
+      document.querySelector(DOMStrings.budgetLabel).textContent = total;
+      document.querySelector(DOMStrings.incomeLabel).textContent = formatNumber(budgetData.totalIncome, 'inc');
+      document.querySelector(DOMStrings.expensesLabel).textContent = formatNumber(budgetData.totalExpenses, 'exp');
       // If costs > income or there are no costs at all, percentage should not be displayed
       if (budgetData.percentage > 0) {
         document.querySelector(DOMStrings.percentageLabel).textContent = budgetData.percentage;

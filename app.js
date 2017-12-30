@@ -279,6 +279,19 @@ var UIController = (function () {
       // Grab date label and set date
       document.querySelector(DOMStrings.dateLabel).textContent = month + ' ' + year;
     },
+    changeType: function() {
+      var fields = document.querySelectorAll(
+        DOMStrings.inputType + ',' + 
+        DOMStrings.inputDescription + ',' +
+        DOMStrings.inputValue
+      );
+
+      fields.forEach(function(el){ 
+        el.classList.toggle('red-focus');
+      });
+
+      document.querySelector(DOMStrings.inputButton).classList.toggle('red');
+    },
     getDOMStrings: function() {
       return DOMStrings;
     }
@@ -306,6 +319,8 @@ var controller = (function (model, view) {
 
     // Event delegator for delete buttons on income/expense items
     document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+
+    document.querySelector(DOM.inputType).addEventListener('change', UIController.changeType);
   };
 
   var updateBudget = function() {

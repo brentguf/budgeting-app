@@ -243,7 +243,7 @@ var UIController = (function () {
       document.querySelector(DOMStrings.expensesLabel).textContent = formatNumber(budgetData.totalExpenses, 'exp');
       // If costs > income or there are no costs at all, percentage should not be displayed
       if (budgetData.percentage > 0) {
-        document.querySelector(DOMStrings.percentageLabel).textContent = budgetData.percentage;
+        document.querySelector(DOMStrings.percentageLabel).textContent = budgetData.percentage + '%';
       } else {
         document.querySelector(DOMStrings.percentageLabel).textContent = "-";
       }
